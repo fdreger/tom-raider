@@ -2,8 +2,6 @@
     "name": "tom-rider",
     "version": "0.0.0",
     "files": [
-        "images.g.jres",
-        "images.g.ts",
         "main.ts",
         "egypt.ts"
     ],
