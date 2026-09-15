@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tom Rider - Arcade Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <iframe id="sim-frame" src="https://trg-arcade.userpxt.io/---simulator" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+
+    <script>
+        var gameCode = null;
+        
+        function runGame() {
+            var sim = document.getElementById('sim-frame');
+            if (gameCode && sim) {
+                console.log("Sending game code to simulator...");
+                sim.contentWindow.postMessage({
+                    type: "run",
+                    code: gameCode,
+                    built: true
+                }, "*");
+            }
+        }
+
+        window.addEventListener('message', function (ev) {
+            var d = ev.data;
+            if (d && d.type === "ready") {
+                console.log("Simulator ready.");
+                fetch('built/binary.js')
+                    .then(resp => resp.text())
+                    .then(code => {
+                        gameCode = code;
+                        runGame();
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
