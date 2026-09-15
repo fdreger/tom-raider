@@ -46,4 +46,4 @@ jobs:
           publish_dir: ./deploy
 
       - name: Deploy to Itch.io
-        run: docker run --rm -v ${{ github.workspace }}/deploy:/deploy -e BUTLER_API_KEY=${{ secrets.BUTLER_API_KEY }} itchio/butler push /deploy fdreger/tom-rider:web
+        run: docker run --rm -v ${{ github.workspace }}/deploy:/deploy -e BUTLER_API_KEY=${{ secrets.BUTLER_API_KEY }} itchio/butler butler push /deploy fdreger/tom-rider:web
