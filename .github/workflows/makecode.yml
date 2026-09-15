@@ -22,14 +22,22 @@ jobs:
           node-version: 18
 
       - name: Build
-        run: npx makecode
+        run: npx makecode build -j
 
       - name: Prepare for Deployment
         run: |
           mkdir deploy
           cp -r web/* deploy/
           mkdir -p deploy/built
-          cp built/binary.js deploy/built/
+          if [ -f built/binary.js ]; then
+            cp built/binary.js deploy/built/
+          elif [ -f built/common-js/binary.js ]; then
+            cp built/common-js/binary.js deploy/built/
+          else
+            echo "Error: built/binary.js not found"
+            ls -R built
+            exit 1
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
