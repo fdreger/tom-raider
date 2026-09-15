@@ -38,7 +38,7 @@ jobs:
           publish_dir: ./deploy
 
       - name: Deploy to Itch.io
-        uses: josephpereira/butler-publish-action@v1
+        uses: Ayush-Bharadwaj/butler-publish-action@v1.0.3
         with:
           butler_key: ${{ secrets.BUTLER_API_KEY }}
           itch_user: fdreger
