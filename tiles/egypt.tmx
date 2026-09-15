@@ -38,7 +38,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="objects">
-  <object id="1" gid="379" x="96" y="64" width="16" height="18"/>
+  <object id="1" gid="379" x="160" y="32" width="16" height="18"/>
   <object id="2" gid="65" x="96" y="112" width="16" height="16"/>
   <object id="3" gid="65" x="304" y="80" width="16" height="16"/>
   <object id="4" gid="132" x="160" y="144" width="16" height="16">

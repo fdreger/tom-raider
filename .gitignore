@@ -12,3 +12,5 @@ _site
 .simstate.json
 
 .vscode
+/.idea/
+.DS_Store

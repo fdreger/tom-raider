@@ -591,7 +591,7 @@ namespace egypt {
     }
 
     export namespace objects {
-        export const OBJECT1: Tom = { id: 1, name: "", x: 96.000000, y: 64.000000, width: 16.000000, height: 18.000000, type: "Tom", room: null };
+        export const OBJECT1: Tom = { id: 1, name: "", x: 160.000000, y: 32.000000, width: 16.000000, height: 18.000000, type: "Tom", room: null };
         export const OBJECT2: Bomb = { id: 2, name: "", x: 96.000000, y: 112.000000, width: 16.000000, height: 16.000000, type: "Bomb", room: null };
         export const OBJECT3: Bomb = { id: 3, name: "", x: 304.000000, y: 80.000000, width: 16.000000, height: 16.000000, type: "Bomb", room: null };
         export const OBJECT4: Switch = { id: 4, name: "", x: 160.000000, y: 144.000000, width: 16.000000, height: 16.000000, type: "Switch", room: null, target: 9 };
