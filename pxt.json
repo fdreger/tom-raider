@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "files": [
         "main.ts",
-        "egypt.ts"
+        "tomb.ts"
     ],
     "supportedTargets": [
         "arcade"

@@ -4,14 +4,14 @@ namespace SpriteKind {
     export const Solid = SpriteKind.create()
 }
 
-let hero_up = egypt.createAnimation(egypt.TOM_UP);
-let hero_down = egypt.createAnimation(egypt.TOM_DOWN)
-let hero_left = egypt.createAnimation(egypt.TOM_LEFT)
+let hero_up = tomb.createAnimation(tomb.TOM_UP);
+let hero_down = tomb.createAnimation(tomb.TOM_DOWN)
+let hero_left = tomb.createAnimation(tomb.TOM_LEFT)
 let hero_righ = flipH(hero_left)
 
 
-tiles.setCurrentTilemap(egypt.createTilemap("map"));
-image.setPalette(egypt.palette)
+tiles.setCurrentTilemap(tomb.createTilemap("map"));
+image.setPalette(tomb.palette)
 
 setup(null);
 
@@ -112,22 +112,22 @@ function move(sp: Sprite, dir: Direction) {
 
 
 function setup(room: string) {
-    for (const floorSwitch of egypt.objects.getSwitchCollectionForRoom(room)) {
-        let heroSprite = sprites.create(egypt.createImage(egypt.SWITCH));
+    for (const floorSwitch of tomb.objects.getSwitchCollectionForRoom(room)) {
+        let heroSprite = sprites.create(tomb.createImage(tomb.SWITCH));
         heroSprite.left = floorSwitch.x
         heroSprite.bottom = floorSwitch.y
         heroSprite.setFlag(SpriteFlag.Ghost, true);
         heroSprite.data = floorSwitch;
     }
-    for (const bomb of egypt.objects.getBombCollectionForRoom(room)) {
-        let heroSprite = sprites.create(egypt.createImage(egypt.BOMB), SpriteKind.Solid);
+    for (const bomb of tomb.objects.getBombCollectionForRoom(room)) {
+        let heroSprite = sprites.create(tomb.createImage(tomb.BOMB), SpriteKind.Solid);
         heroSprite.left = bomb.x
         heroSprite.bottom = bomb.y
         heroSprite.setFlag(SpriteFlag.Ghost, true);
         heroSprite.data = bomb;
     }
-    for (const h of egypt.objects.getTomCollectionForRoom(room)) {
-        let heroSprite = sprites.create(egypt.createImage(egypt.TOM_DOWN));
+    for (const h of tomb.objects.getTomCollectionForRoom(room)) {
+        let heroSprite = sprites.create(tomb.createImage(tomb.TOM_DOWN));
         heroSprite.left = h.x
         const tom = h as Tom;
         tom.facing = Direction.ZERO;
@@ -137,8 +137,8 @@ function setup(room: string) {
         heroSprite.data = h;
         heroSprite.setFlag(SpriteFlag.Ghost, true);
     }
-    for (const h of egypt.objects.getDoorCollectionForRoom(room)) {
-        let heroSprite = sprites.create(egypt.createImage(egypt.DOOR), SpriteKind.Solid);
+    for (const h of tomb.objects.getDoorCollectionForRoom(room)) {
+        let heroSprite = sprites.create(tomb.createImage(tomb.DOOR), SpriteKind.Solid);
         heroSprite.left = h.x
         heroSprite.bottom = h.y
         heroSprite.setFlag(SpriteFlag.Ghost, true);

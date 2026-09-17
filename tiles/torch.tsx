@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.2" name="torch" tilewidth="8" tileheight="16" tilecount="4" columns="4">
- <image source="../../repos/tom-raider/tiles/torch.png" width="32" height="16"/>
+ <image source="torch.png" width="32" height="16"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
