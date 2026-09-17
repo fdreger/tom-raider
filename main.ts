@@ -4,18 +4,27 @@ namespace SpriteKind {
     export const Solid = SpriteKind.create()
 }
 
+namespace userconfig {
+    export const ARCADE_SCREEN_WIDTH = 160
+    export const ARCADE_SCREEN_HEIGHT = 144
+}
+
+
 let hero_up = tomb.createAnimation(tomb.TOM_UP);
 let hero_down = tomb.createAnimation(tomb.TOM_DOWN)
 let hero_left = tomb.createAnimation(tomb.TOM_LEFT)
 let hero_righ = flipH(hero_left)
 
+let currentRoomName = tomb.ATRIUM_NAME;
 
-tiles.setCurrentTilemap(tomb.createTilemap("map"));
+
+tiles.setCurrentTilemap(tomb.createTilemap(currentRoomName));
 image.setPalette(tomb.palette)
-
-setup(null);
+let lastWrap: Warp = null;
+setup(currentRoomName);
 
 let hero: Sprite;
+let debug: boolean = false;
 
 function flipH(imgs: Image[]): Image[] {
     return imgs.map(i => {
@@ -57,7 +66,19 @@ function getObstacleFromRelativeDirection(sp: Sprite, dir: Direction) {
     return null;
 }
 
+let cooldown = 0;
+
+controller.A.addEventListener(ControllerButtonEvent.Pressed, () => {
+        console.log(JSON.stringify({x: hero.x, y: hero.y, bottom: hero.bottom}))
+})
+
+controller.B.addEventListener(ControllerButtonEvent.Pressed, () => {
+    debug = !debug;
+})
+
+
 game.onUpdate(() => {
+    if (cooldown > 0) cooldown--;
     if (!isAnimating(hero)) {
         if (controller.left.isPressed()) {
             moveHero(Direction.W);
@@ -69,6 +90,75 @@ game.onUpdate(() => {
             moveHero(Direction.S);
         } else {
             moveHero(Direction.ZERO);
+        }
+
+
+    let warps = tomb.objects.getWarpCollectionForRoom(currentRoomName)
+    let inAnyWarp = false;
+        for (let i = 0; i < warps.length; i++) {
+            let warp = warps[i]
+            if (isSpriteInRect(hero, warp)) {
+                inAnyWarp = true;
+                if (lastWrap != warp) {
+    
+                    console.log("wrap id:" + warp.id + ", warp target: " + warp.jumpTo + "; current room: " + warp.room)
+                    let target = tomb.objects.getById(warp.jumpTo) as Warp;
+    
+                    currentRoomName = target.room;
+                    tiles.setCurrentTilemap(tomb.createTilemap(currentRoomName))
+                    setup(currentRoomName);
+                    console.log("cooldown");
+                    cooldown = 60;
+
+                    animation.stopAnimation(animation.AnimationTypes.MovementAnimation, hero);
+
+                    if (target.vertical) {
+
+                        console.log(JSON.stringify(target))
+
+                        let hOffset = hero.x - warp.x;
+                        hero.x = target.x + hOffset
+                        hero.bottom = target.y + target.height;
+
+                        console.log("hero x: " + hero.x);
+                        console.log("hero.bottom: " + hero.bottom);
+
+
+                    } else {
+                        let vOffset = hero.y - warp.y
+                        hero.y = target.y + vOffset;
+                        hero.left = target.x;
+                    }
+
+                    lastWrap = target as Warp;
+    
+                    return;
+                }
+            }
+        }
+        if (!inAnyWarp) {
+            lastWrap = null;
+        }
+    }
+});
+
+scene.createRenderable(scene.HUD_Z, (target, camera) => {
+    if (debug) {
+        let warps = tomb.objects.getWarpCollectionForRoom(currentRoomName);
+        for (let wrap of warps) {
+            target.drawRect(
+                wrap.x - camera.drawOffsetX,
+                wrap.y - camera.drawOffsetY,
+                wrap.width,
+                wrap.height,
+                10 // Yellow color in default palette
+            );
+            target.print(
+                "" + wrap.id + " " + wrap.name,
+                wrap.x - camera.drawOffsetX + 2,
+                wrap.y - camera.drawOffsetY + 2,
+                5
+            );
         }
     }
 });
@@ -112,6 +202,15 @@ function move(sp: Sprite, dir: Direction) {
 
 
 function setup(room: string) {
+
+    console.log("setting up " + room)
+
+    game.currentScene().allSprites.forEach(spr => {
+        if (spr != hero && spr instanceof Sprite) {
+            spr.destroy();
+        }
+    })
+
     for (const floorSwitch of tomb.objects.getSwitchCollectionForRoom(room)) {
         let heroSprite = sprites.create(tomb.createImage(tomb.SWITCH));
         heroSprite.left = floorSwitch.x
@@ -126,16 +225,19 @@ function setup(room: string) {
         heroSprite.setFlag(SpriteFlag.Ghost, true);
         heroSprite.data = bomb;
     }
-    for (const h of tomb.objects.getTomCollectionForRoom(room)) {
-        let heroSprite = sprites.create(tomb.createImage(tomb.TOM_DOWN));
-        heroSprite.left = h.x
-        const tom = h as Tom;
-        tom.facing = Direction.ZERO;
-        heroSprite.bottom = h.y
-        scene.cameraFollowSprite(heroSprite)
-        hero = heroSprite;
-        heroSprite.data = h;
-        heroSprite.setFlag(SpriteFlag.Ghost, true);
+    if (!hero) {
+        for (const h of tomb.objects.getTomCollectionForRoom(room)) {
+            console.log("creating a new hero")
+            let heroSprite = sprites.create(tomb.createImage(tomb.TOM_DOWN));
+            heroSprite.left = h.x
+            const tom = h as Tom;
+            tom.facing = Direction.ZERO;
+            heroSprite.bottom = h.y
+            scene.cameraFollowSprite(heroSprite)
+            hero = heroSprite;
+            heroSprite.data = h;
+            heroSprite.setFlag(SpriteFlag.Ghost, true);
+        }
     }
     for (const h of tomb.objects.getDoorCollectionForRoom(room)) {
         let heroSprite = sprites.create(tomb.createImage(tomb.DOOR), SpriteKind.Solid);
@@ -295,4 +397,35 @@ const TOM_WALKING: StateMachine = {
             }
         },
     ]
-} 
+}
+
+
+function top(object: WorldObject): number {
+    return object.y
+}
+
+function bottom(object: WorldObject): number {
+    return object.y + object.height;
+}
+function left(object: WorldObject): number {
+    return object.x;
+}
+function right(object: WorldObject): number {
+    return object.x + object.width;
+}
+
+
+function isSpriteOverlappingRect(s: Sprite, r: WorldObject): boolean {
+    return s.left < r.x + r.width &&
+           s.right > r.x &&
+           s.top < r.y + r.height &&
+           s.bottom > r.y;
+}
+
+function isSpriteInRect(s: Sprite, r: WorldObject): boolean {
+    return s.x >= r.x &&
+           s.x <= r.x + r.width &&
+           s.y >= r.y &&
+           s.y <= r.y + r.height;
+}
+
