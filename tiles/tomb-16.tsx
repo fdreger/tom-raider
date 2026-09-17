@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.2" name="tomb-16" tilewidth="16" tileheight="16" tilecount="918" columns="27">
  <image source="tomb.png" width="441" height="549"/>
+ <tile id="0">
+  <animation>
+   <frame tileid="192" duration="1000"/>
+   <frame tileid="193" duration="1000"/>
+  </animation>
+ </tile>
  <tile id="56" type="Gold"/>
  <tile id="108" type="Crate"/>
  <tile id="109" type="Crate"/>
